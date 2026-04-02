@@ -1,13 +1,30 @@
-
 # 🚀 Production-Grade AWS 3-Tier Architecture with High Availability and Security
 
 ---
 
 ## 📌 Introduction
 
-This repository presents the design and implementation of a **production-grade AWS 3-tier architecture** used to host scalable and secure web applications.
+This repository presents the design and implementation of a production-grade AWS 3-tier architecture used to host scalable and secure web applications.
 
 The architecture follows industry-standard best practices by separating the system into independent layers, ensuring improved scalability, fault tolerance, and security.
+
+---
+
+## 📌 Project Overview
+
+This project demonstrates the design and implementation of a secure, scalable, and production-ready 3-tier architecture on AWS.
+
+The system is structured into three layers:
+
+* Presentation Layer using Amazon CloudFront and Amazon S3 for efficient content delivery
+* Application Layer using Nginx on EC2 instances and an Application Load Balancer for handling incoming traffic
+* Database Layer using Amazon RDS deployed in private subnets for secure data storage
+
+The architecture is built using a custom VPC with public and private subnets, ensuring proper network isolation and controlled access between layers.
+
+Key AWS services such as CloudFront, S3, EC2, ALB, and RDS are integrated to simulate a real-world cloud deployment model.
+
+The application is accessed using the CloudFront distribution URL without custom domain configuration.
 
 ---
 
@@ -41,7 +58,6 @@ Each layer is independently scalable and protected from direct external exposure
 
 * Amazon S3 for static asset storage
 * Amazon CloudFront for global CDN distribution
-* Amazon Route 53 for DNS resolution
 
 ---
 
@@ -49,7 +65,7 @@ Each layer is independently scalable and protected from direct external exposure
 
 * Nginx Web Server deployed in public subnet
 * Application Server deployed in private subnet
-* Elastic Load Balancer distributes incoming traffic
+* Application Load Balancer distributes incoming traffic
 
 ---
 
@@ -75,22 +91,21 @@ Each layer is independently scalable and protected from direct external exposure
 
 ## 🔄 Request Flow
 
-1. User accesses application via domain
-2. Amazon Route 53 resolves DNS
-3. Traffic is routed to Amazon CloudFront
-4. CloudFront serves cached content or forwards request
-5. Request reaches Elastic Load Balancer
-6. Load Balancer distributes traffic to Web Server
-7. Web Server forwards request to Application Server
-8. Application Server interacts with Amazon RDS
-9. Response is returned to the user
+1. User accesses application via CloudFront URL
+2. Request is routed to Amazon CloudFront
+3. CloudFront serves cached content or forwards request
+4. Request reaches Application Load Balancer
+5. Load Balancer distributes traffic to Web Server
+6. Web Server forwards request to Application Server
+7. Application Server interacts with Amazon RDS
+8. Response is returned to the user
 
 ---
 
 ## ⚡ Engineering Decisions
 
 * Implemented private subnets for application and database layers to reduce attack surface
-* Used Elastic Load Balancer for traffic distribution and high availability
+* Used Application Load Balancer for traffic distribution and high availability
 * Integrated CloudFront to improve latency and global performance
 * Designed VPC with proper routing and subnet isolation
 * Ensured database is not publicly accessible
@@ -100,11 +115,11 @@ Each layer is independently scalable and protected from direct external exposure
 ## 🔐 Security Implementation
 
 * Network isolation using public and private subnets
-* Security groups to control inbound/outbound traffic
+* Security groups to control inbound and outbound traffic
 * Network ACLs for subnet-level protection
 * No direct internet access to database
 * NAT Gateway for secure outbound traffic
-* CloudFront for additional protection
+* CloudFront as an additional security layer
 
 ---
 
@@ -123,7 +138,6 @@ Includes:
 * RDS Database
 * Load Balancer
 * CloudFront Distribution
-* Route 53
 
 ---
 
@@ -132,11 +146,10 @@ Includes:
 1. Designed and created custom VPC
 2. Configured subnets and routing
 3. Deployed EC2 instances for web and application layers
-4. Configured Nginx web server
+4. Configured Nginx as a reverse proxy
 5. Set up Amazon RDS database
 6. Configured Application Load Balancer
 7. Integrated CloudFront with S3 and ALB
-8. Configured Route 53 for DNS routing
 
 ---
 
@@ -149,8 +162,11 @@ In addition to the core implementation, I have hands-on practice and understandi
 * Elastic Load Balancer (ELB) concepts
 * Elastic Network Interface (ENI) for advanced networking
 * DynamoDB for NoSQL use cases
+* Route53 for domain based routing
 
 These services were explored separately and can be incorporated to further enhance the system.
+
+---
 
 ## 🎯 Key Highlights
 
@@ -169,7 +185,7 @@ These services were explored separately and can be incorporated to further enhan
 * CI/CD pipeline integration
 * Infrastructure as Code (Terraform)
 * Containerization using Docker and Kubernetes
-
+* Route53 domain based
 ---
 
 ## 📌 Conclusion
