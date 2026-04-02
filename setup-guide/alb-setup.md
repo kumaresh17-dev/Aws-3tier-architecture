@@ -1,152 +1,197 @@
-# Application Load Balancer Setup (Project-Specific)
+# Application Load Balancer (ALB) Setup – Complete Guide
 
 ---
 
 ## 📌 Overview
 
-In this project, the Application Load Balancer (ALB) is used to handle incoming traffic from CloudFront and distribute it across the Web Server layer.
+Application Load Balancer (ALB) is used to distribute incoming traffic from CloudFront to Web Servers in the public subnet.
 
-The ALB is deployed in public subnets and acts as an entry point to the application layer, ensuring high availability and fault tolerance.
-
----
-
-## 🏗️ Architecture Placement
-
-Route 53 → CloudFront → ALB → Web Server (Public Subnet) → App Server (Private Subnet) → RDS
+It ensures:
+- High availability  
+- Fault tolerance  
+- Load distribution  
 
 ---
 
-## 🎯 Purpose in This Project
+## 🎯 Architecture Role
 
-- Acts as a bridge between CloudFront and Web Servers  
-- Distributes incoming traffic efficiently  
-- Improves system availability  
-- Enables future scalability (Auto Scaling ready)  
+Route53 → CloudFront → ALB → Web Server → App Server → RDS
 
 ---
 
-## ⚙️ Step-by-Step Setup
+## 🧱 Step 1: Create Target Group
 
-### 🔹 Step 1: Create Target Group
+1. Go to AWS Console → EC2  
+2. Click **Target Groups**  
+3. Click **Create target group**
+
+---
+
+### 🔹 Basic Configuration
 
 - Target type: Instance  
+- Target group name: web-tg  
 - Protocol: HTTP  
 - Port: 80  
-- VPC: Select your custom VPC  
+- VPC: my-vpc  
 
-👉 Register only **Web Server EC2 instance** (not App Server)
+Click **Next**
 
 ---
 
-### 🔹 Step 2: Create ALB
+### 🔹 Register Targets
 
-- Type: Application Load Balancer  
+- Select Web Server EC2 instance  
+- Click **Include as pending below**  
+
+Click **Create target group**
+
+---
+
+## ❤️ Step 2: Configure Health Check (IMPORTANT)
+
+1. Open Target Group → Health checks  
+
+### Settings:
+
+- Protocol: HTTP  
+- Path: /  
+- Healthy threshold: 2  
+- Unhealthy threshold: 2  
+- Timeout: 5 sec  
+- Interval: 30 sec  
+
+👉 Make sure Nginx is running in Web Server
+
+---
+
+## 🧱 Step 3: Create Application Load Balancer
+
+1. Go to EC2 → Load Balancers  
+2. Click **Create Load Balancer**  
+3. Select **Application Load Balancer**
+
+---
+
+### 🔹 Basic Configuration
+
+- Name: my-alb  
 - Scheme: Internet-facing  
 - IP type: IPv4  
 
 ---
 
-### 🔹 Step 3: Network Configuration
+## 🌐 Step 4: Network Mapping
 
-- Select your VPC  
-- Choose **2 public subnets** (for high availability)  
+- VPC: my-vpc  
+- Select **2 Public Subnets** (Important for HA)
 
-👉 Important:
-ALB must be in **public subnet**, because it receives internet traffic
+Example:
+- public-subnet-1 (ap-south-1a)  
+- public-subnet-2 (ap-south-1b)  
 
 ---
 
-### 🔹 Step 4: Security Group Configuration
+## 🔐 Step 5: Security Group
 
 Create ALB Security Group:
 
-- Allow HTTP (Port 80) from anywhere OR CloudFront  
-- Outbound: Allow all  
+- Allow HTTP (80) → 0.0.0.0/0  
+
+👉 (Optional) Allow HTTPS (443)
 
 ---
 
-### 🔹 Step 5: Listener Configuration
+## 🎧 Step 6: Listener Configuration
 
 - Protocol: HTTP  
 - Port: 80  
-- Forward to: Target Group (Web Server)
+
+### Default Action:
+
+- Forward to: web-tg (Target Group)
 
 ---
 
-### 🔹 Step 6: Register Targets
+## 🚀 Step 7: Create ALB
 
-- Select Web Server EC2 instance  
-- Add to target group  
+- Review all settings  
+- Click **Create Load Balancer**
 
----
-
-## ❤️ Health Check (Important for this Project)
-
-- Protocol: HTTP  
-- Path: `/`  
-
-👉 Ensure:
-- Nginx is running in Web Server  
-- Port 80 is open  
+⏳ Wait until status = Active
 
 ---
 
-## 🔐 Security Design (Project-Specific)
+## 🔍 Step 8: Get ALB DNS
 
-- ALB is the only public entry point  
-- Web Server allows traffic only from ALB  
-- App Server is in private subnet (no internet access)  
-- Database is completely isolated  
+1. Open ALB  
+2. Copy DNS name
 
-👉 This ensures proper **3-tier security model**
+Example:
+my-alb-123456.ap-south-1.elb.amazonaws.com
 
----
-
-## 🔄 Traffic Flow (Real Flow in this Project)
-
-1. User request → Route 53  
-2. Route 53 → CloudFront  
-3. CloudFront → ALB  
-4. ALB → Web Server  
-5. Web Server → App Server  
-6. App Server → RDS  
 
 ---
 
-## 🧠 Design Decision
+## 🔐 Step 9: Update Web Server Security Group (VERY IMPORTANT)
 
-Why ALB is used:
+Modify Web Server SG:
 
-- Layer 7 routing (HTTP/HTTPS)  
-- Better integration with CloudFront  
-- Supports scaling in future  
-- Provides health checks  
+- Allow HTTP (80) ONLY from ALB Security Group  
 
----
-
-## 🔥 Testing
-
-- Copy ALB DNS  
-- Access in browser  
-- Verify Nginx response  
+👉 NOT from 0.0.0.0/0
 
 ---
 
-## ⚡ Common Mistakes
+## 🔄 Step 10: Test ALB
 
-❌ Adding App Server in target group  
-✔ Only Web Server should be added  
+- Paste ALB DNS in browser  
+- Verify Nginx page loads  
 
-❌ Keeping Web Server open to internet  
-✔ Restrict access only from ALB  
+---
 
-❌ Wrong subnet selection  
-✔ Always use public subnets for ALB  
+## 🔄 Full Flow
+
+CloudFront → ALB → Web Server → App Server  
+
+---
+
+## 🔐 Security Design
+
+- ALB is public entry point  
+- Web Server is protected  
+- App Server is private  
+- Database fully isolated  
 
 ---
 
 ## 🎯 Final Result
 
-- Traffic successfully routed via ALB  
-- High availability achieved  
-- Proper 3-tier architecture maintained  
+✔ ALB created successfully  
+✔ Traffic distributed to Web Server  
+✔ High availability achieved  
+✔ Secure architecture maintained  
+
+---
+
+## ⚡ Common Mistakes (VERY IMPORTANT)
+
+❌ Adding App Server in target group  
+✔ Only Web Server should be added  
+
+❌ Using private subnet for ALB  
+✔ Always use public subnets  
+
+❌ Health check failing  
+✔ Ensure Nginx running  
+
+❌ Web Server open to internet  
+✔ Restrict to ALB only  
+
+---
+
+## 💡 Pro Tips
+
+- Use HTTPS listener with SSL certificate (ACM)  
+- Enable access logs (S3)  
+- Integrate with Auto Scaling (future)
