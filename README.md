@@ -140,15 +140,17 @@ Includes:
 
 ---
 
-## 🧠 Advanced AWS Concepts
+## 🧠 Additional AWS Knowledge
 
-* Auto Scaling (conceptual integration)
-* CloudWatch metrics and alarms
-* Elastic Load Balancer (ELB)
-* Elastic Network Interface (ENI)
-* DynamoDB (use-case level understanding)
+In addition to the core implementation, I have hands-on practice and understanding of the following AWS services and how they can be integrated into this architecture:
 
----
+* Auto Scaling for dynamic scaling of EC2 instances
+* CloudWatch for monitoring, metrics, and alerting
+* Elastic Load Balancer (ELB) concepts
+* Elastic Network Interface (ENI) for advanced networking
+* DynamoDB for NoSQL use cases
+
+These services were explored separately and can be incorporated to further enhance the system.
 
 ## 🎯 Key Highlights
 
